@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.movie.play.dao.MovieMapper">
+    <resultMap id="ResultMap" type="com.example.movie.play.entity.MovieEntity">
+        <result column="user_id" property="userId" jdbcType="INTEGER"></result>
+        <result column="movie_name" property="movieName" jdbcType="VARCHAR"></result>
+        <result column="url" property="url" jdbcType="VARCHAR"></result>
+        <result column="deleted" property="deleted" jdbcType="INTEGER"></result>
+    </resultMap>
+    <sql id="Column_List">
+        user_id,movie_name,url,deleted
+    </sql>
+    <select id="findByMovieName" parameterType="java.lang.String" resultMap="ResultMap">
+        Select
+        <include refid="Column_List"></include>
+        From movie
+        WHERE movie_name=#{name}
+    </select>
+</mapper>
