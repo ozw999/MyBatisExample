@@ -1,7 +1,8 @@
 spring:
   datasource:
     driver-class-name: org.sqlite.JDBC
-    url: jdbc:sqlite:D:\Workspaces\movie\src\main\resources\database\movie.db
+#    url: jdbc:sqlite:D:\Workspaces\movie\src\main\resources\database\movie.db
+    url: jdbc:sqlite:D:\Workspaces\movie.db
     username:
     password:
 

@@ -9,7 +9,8 @@ import lombok.Data;
  */
 @Data
 public class MovieEntity {
-    private Integer id;
+    private Integer movieId;
+    private Integer userId;
     private String movieName;
     private String url;
     private Boolean deleted;

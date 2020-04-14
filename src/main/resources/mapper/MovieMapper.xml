@@ -4,18 +4,77 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.movie.play.dao.MovieMapper">
     <resultMap id="ResultMap" type="com.example.movie.play.entity.MovieEntity">
+        <result column="movie_id" property="movieId" jdbcType="INTEGER"></result>
         <result column="user_id" property="userId" jdbcType="INTEGER"></result>
         <result column="movie_name" property="movieName" jdbcType="VARCHAR"></result>
         <result column="url" property="url" jdbcType="VARCHAR"></result>
         <result column="deleted" property="deleted" jdbcType="INTEGER"></result>
     </resultMap>
+
     <sql id="Column_List">
-        user_id,movie_name,url,deleted
+        movie_id,user_id,movie_name,url,deleted
     </sql>
+
     <select id="findByMovieName" parameterType="java.lang.String" resultMap="ResultMap">
         Select
         <include refid="Column_List"></include>
         From movie
         WHERE movie_name=#{name}
     </select>
+
+    <!--    SQLite 不支持 FIND_IN_SET 函数-->
+    <!--        <select id="findByUserIds" parameterType="java.lang.String" resultMap="ResultMap">-->
+    <!--            select-->
+    <!--            <include refid="Column_List"></include>-->
+    <!--            from movie-->
+    <!--            where FIND_IN_SET (user_id,#{userIds})-->
+    <!--        </select>-->
+
+    <select id="findByUserIds" parameterType="java.util.List" resultMap="ResultMap">
+        select
+        <include refid="Column_List"></include>
+        from movie
+        where user_id in
+        <foreach collection="list" index="i" item="id" open="(" close=")" separator=",">
+            #{id,jdbcType=INTEGER}
+        </foreach>
+    </select>
+
+    <!--    SQLite 不支持 CONCAT 函数-->
+    <!--    <select id="findByAmbigMovieName" parameterType="java.lang.String" resultMap="ResultMap">-->
+    <!--        select-->
+    <!--        <include refid="Column_List"></include>-->
+    <!--        from movie where movie_name like CONCAT('%',#{name},'%')-->
+    <!--    </select>-->
+
+    <update id="update" parameterType="com.example.movie.play.entity.MovieEntity">
+        update movie
+        <set>
+            <if test="null != userId">user_id = #{userId},</if>
+            <if test="null != movieName">movie_name = #{movieName},</if>
+            <if test="null != url">url = #{url},</if>
+        </set>
+        where movie_id = #{movieId}
+    </update>
+
+    <insert id="add" parameterType="com.example.movie.play.entity.MovieEntity">
+        insert into movie
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="null != userId">user_id,</if>
+            <if test="null != movieName">movie_name,</if>
+            <if test="null != url">url,</if>
+            <if test="1 == 1">deleted,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="null != userId">#{userId},</if>
+            <if test="null != movieName">#{movieName},</if>
+            <if test="null != url">#{url},</if>
+            <if test="1 == 1">0,</if>
+        </trim>
+    </insert>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from movie where movie_id=#{movieId}
+    </delete>
+
 </mapper>
