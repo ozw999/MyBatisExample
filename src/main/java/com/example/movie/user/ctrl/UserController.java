@@ -17,7 +17,7 @@ import java.util.List;
  * @Date: 2020/3/31
  */
 @RestController
-@RequestMapping(value = "/user", method = {RequestMethod.POST})
+@RequestMapping(value = "/user", method = {RequestMethod.POST,RequestMethod.GET})
 @Api(value = "用户", tags = "用户操作")
 public class UserController {
     @Autowired
@@ -27,6 +27,12 @@ public class UserController {
     @RequestMapping(value = "/findUserById")
     public List<UserEntity> findUserById(String id) {
         return userService.findUserById(id);
+    }
+
+    @ApiOperation("获取用户2")
+    @RequestMapping(value = "/findUserByName")
+    public UserEntity findUserByName(String username) {
+        return userService.findUserByName(username);
     }
 
 }

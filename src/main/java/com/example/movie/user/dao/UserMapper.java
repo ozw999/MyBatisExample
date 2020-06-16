@@ -17,4 +17,7 @@ import java.util.List;
 public interface UserMapper {
     @SelectProvider(type = UserDao.class,method = "findUserById")
     List<UserEntity> findUserById(String id);
+
+    @SelectProvider(type = UserDao.class,method = "findUserByName")
+    UserEntity findUserByName(String username);
 }

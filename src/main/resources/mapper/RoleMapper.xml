@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.movie.login.role.dao.RoleMapper">
+    <resultMap id="RusultMap" type="com.example.movie.login.role.entity.RoleEntity">
+        <result column="role_id" property="roleId" jdbcType="INTEGER"></result>
+        <result column="role_name" property="roleName" jdbcType="VARCHAR"></result>
+        <result column="deleted" property="deleted" jdbcType="INTEGER"></result>
+    </resultMap>
+
+    <sql id="Column_List">
+        role_id,role_name,deleted
+    </sql>
+
+    <select id="findByIds" parameterType="java.util.List" resultMap="RusultMap">
+        select
+        <include refid="Column_List"></include>
+        from role
+        where role_id in
+        <foreach collection="list" index="i" item="id" open="(" close=")" separator=",">
+            #{id,jdbcType=INTEGER}
+        </foreach>
+    </select>
+
+    <select id="findByUserId" parameterType="java.lang.Integer" resultMap="RusultMap">
+        select
+        <include refid="Column_List"></include>
+        from role
+        where role_id = (SELECT role_id FROM user_role WHERE user_id = #{id})
+    </select>
+
+</mapper>
