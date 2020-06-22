@@ -1,5 +1,7 @@
 package com.example.movie.utils;
 
+import com.example.movie.component.SecurityConstant;
+
 import java.security.MessageDigest;
 
 /**
@@ -8,11 +10,9 @@ import java.security.MessageDigest;
  * @Date: 2020/6/10
  */
 public class MD5Util {
-    //秘钥
-    private static final String SALT = "necp";
 
     public static String encode(String password) {
-        password = password + SALT;
+        password = password + SecurityConstant.SALT;
         MessageDigest md5;
         try {
             //MessageDigest类为应用程序提供信息摘要算法的功能，如 MD5或SHA算法。

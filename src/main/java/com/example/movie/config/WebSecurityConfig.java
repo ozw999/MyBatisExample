@@ -1,5 +1,7 @@
 package com.example.movie.config;
 
+import com.example.movie.user.entity.UserEntity;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -7,9 +9,10 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import javax.sql.DataSource;
+import java.io.PrintWriter;
 
 /**
  * @Description:configure(AuthenticationManagerBuilder)配置user-detail服务，configure(WebSecurity)配置Spring Security的filter链，configure(HttpSecurity)配置如何通过拦截器保护请求。
@@ -88,7 +91,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //                .loginProcessingUrl("/login")
 //                .usernameParameter("username")
 //                .passwordParameter("password")
-//                .successHandler()
+//                .successHandler(((httpServletRequest, httpServletResponse, authentication) -> {
+//                    Object principal = authentication.getPrincipal();//获取UserDetails
+//                    String username = ((UserEntity) principal).getUsername();
+//                    httpServletResponse.setContentType("application/json;charset=utf-8");
+//                    PrintWriter out = httpServletResponse.getWriter();
+//                    out.write(new ObjectMapper().writeValueAsString(principal));
+//                    out.flush();
+//                    out.close();
+//                }))
+                .successHandler(new CustomAuthSuccessHandler())
+                .permitAll()
 
         ;
     }
