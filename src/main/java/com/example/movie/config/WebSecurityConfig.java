@@ -1,6 +1,9 @@
 package com.example.movie.config;
 
+import com.example.movie.component.CommonResponse;
+import com.example.movie.component.LoginFailureEnum;
 import com.example.movie.user.entity.UserEntity;
+import com.example.movie.utils.ResponseUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -89,18 +92,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .formLogin()
 //                .loginProcessingUrl("/login")
-//                .usernameParameter("username")
-//                .passwordParameter("password")
-//                .successHandler(((httpServletRequest, httpServletResponse, authentication) -> {
-//                    Object principal = authentication.getPrincipal();//获取UserDetails
-//                    String username = ((UserEntity) principal).getUsername();
-//                    httpServletResponse.setContentType("application/json;charset=utf-8");
-//                    PrintWriter out = httpServletResponse.getWriter();
-//                    out.write(new ObjectMapper().writeValueAsString(principal));
-//                    out.flush();
-//                    out.close();
-//                }))
+                .usernameParameter("username")
+                .passwordParameter("password")
                 .successHandler(new CustomAuthSuccessHandler())
+                .failureHandler(((httpServletRequest, httpServletResponse, exception) -> {
+                    CommonResponse result = new CommonResponse(CommonResponse.FAILURE_CODE, LoginFailureEnum.getValue(exception.getMessage()));
+                    ResponseUtil.writeData(httpServletResponse,result);
+                }))
                 .permitAll()
 
         ;
