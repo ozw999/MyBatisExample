@@ -1,11 +1,5 @@
 package com.example.movie.component;
 
-/**
- * @Description:
- * @Author: Ou
- * @Date: 2020/6/22
- */
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -13,8 +7,11 @@ import java.io.Serializable;
 import java.util.Map;
 
 /**
- * 通用返回格式对象
+ * @Description: 通用返回格式对象
+ * @Author: Ou
+ * @Date: 2020/6/22
  */
+
 @ApiModel(description = "通用返回对象")
 public class CommonResponse implements Serializable {
     /**

@@ -10,15 +10,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.io.PrintWriter;
 
 /**
- * @Description:configure(AuthenticationManagerBuilder)配置user-detail服务，configure(WebSecurity)配置Spring Security的filter链，configure(HttpSecurity)配置如何通过拦截器保护请求。
+ * @Description: Security相关配置
+ *
  * @Author: Ou
  * @Date: 2020/6/10
  */
@@ -28,6 +31,7 @@ import java.io.PrintWriter;
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+    //从数据库表查询所需注入
 //    @Autowired
 //    private DataSource dataSource;
 
@@ -35,15 +39,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private CustomUserDetailsService customUserDetailsService;
 
     /**
-     * 密码加密方式
-     * 不注入会报错
+     * 注入密码加密方式
      *
      * @return
      */
     @Bean
     PasswordEncoder passwordEncoder() {
-        return new MD5PasswordEncoder();
-//        return NoOpPasswordEncoder.getInstance();
+        return new MD5PasswordEncoder();    //自定义MD5加密
+//        return NoOpPasswordEncoder.getInstance();     //明文方式，不推荐使用
     }
 
     /**
@@ -69,6 +72,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //        ;
     }
 
+    /**
+     * 配置如何通过拦截器保护请求
+     *
+     * @param http
+     * @throws Exception
+     */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
@@ -79,29 +88,41 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()    //开启URL权限配置
 //                .antMatchers("/**").permitAll()
                 // 开放swagger start
-                .antMatchers("/swagger-ui.html").permitAll()
-                .antMatchers("/swagger-resources/**").permitAll()
-                .antMatchers("/images/**").permitAll()
-                .antMatchers("/webjars/**").permitAll()
-                .antMatchers("/v2/api-docs").permitAll()
-                .antMatchers("/configuration/ui").permitAll()
-                .antMatchers("/configuration/security").permitAll()
-                // swagger end
+                .antMatchers("/swagger-ui.html",
+                        "/swagger-resources/**",
+                        "/images/**",
+                        "/webjars/**",
+                        "/v2/api-docs",
+                        "/configuration/ui",
+                        "/configuration/security")
+                .permitAll()//以上的请求都不需要认证   swagger end
                 .antMatchers("/user/**").hasRole("ADMIN")   //角色区分大小写
                 .anyRequest().authenticated()   //剩余的其他接口，登录之后就能访问
                 .and()
-                .formLogin()
+                .formLogin()    //使用表单登录，不再使用默认httpBasic方式
+//                .loginPage("/login.html")
 //                .loginProcessingUrl("/login")
-                .usernameParameter("username")
-                .passwordParameter("password")
-                .successHandler(new CustomAuthSuccessHandler())
+                .usernameParameter("username")  //用户名参数名称
+                .passwordParameter("password")  //密码参数名称
+                .successHandler(new CustomAuthSuccessHandler())     //登录成功处理器
                 .failureHandler(((httpServletRequest, httpServletResponse, exception) -> {
                     CommonResponse result = new CommonResponse(CommonResponse.FAILURE_CODE, LoginFailureEnum.getValue(exception.getMessage()));
-                    ResponseUtil.writeData(httpServletResponse,result);
-                }))
-                .permitAll()
-
+                    ResponseUtil.writeData(httpServletResponse, result);
+                }))     //登录失败处理器
+                .and().addFilter(new AuthenticationFilter(authenticationManager()))     //认证过滤器
         ;
     }
 
+    /**
+     * 配置Spring Security的filter链
+     * 用来忽略一些url地址，对其不进行校验，通常用在一些静态文件中。
+     *
+     * @param web
+     * @throws Exception
+     */
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        super.configure(web);
+//        web.ignoring().antMatchers("/js/**","/css/**","/images/**");
+    }
 }

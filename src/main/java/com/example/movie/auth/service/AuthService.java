@@ -19,4 +19,12 @@ public class AuthService {
     public AuthModel findById(Integer id){
         return authMapper.findById(id);
     }
+
+    public void addToken(Integer userId,String token){
+        authMapper.addToken(userId,token);
+    }
+
+    public AuthModel findByToken(String token){
+        return authMapper.findByToken(token);
+    }
 }
