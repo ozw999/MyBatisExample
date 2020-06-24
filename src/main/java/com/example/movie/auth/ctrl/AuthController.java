@@ -26,20 +26,20 @@ public class AuthController {
 
     @ApiOperation("根据ID获取授权")
     @RequestMapping(value = "/findAuthById")
-    public AuthModel findAuthById(Integer id) {
+    public AuthModel findAuthById(@ApiParam(value = "ID",required = true) @RequestParam Integer id) {
         return authService.findById(id);
     }
 
     @ApiOperation("添加授权")
     @RequestMapping(value = "/addAuth")
-    public void addAuth(@ApiParam(value = "用户ID") @RequestParam Integer userId,
-                        @ApiParam(value = "授权码") @RequestParam String token) {
+    public void addAuth(@ApiParam(value = "用户ID",required = true) @RequestParam Integer userId,
+                        @ApiParam(value = "授权码",required = true) @RequestParam String token) {
         authService.addToken(userId,token);
     }
 
     @ApiOperation("根据token获取授权")
     @RequestMapping(value = "/findAuthByToken")
-    public AuthModel Auth(String token) {
+    public AuthModel Auth(@ApiParam(value = "token",required = true) @RequestParam String token) {
         return authService.findByToken(token);
     }
 

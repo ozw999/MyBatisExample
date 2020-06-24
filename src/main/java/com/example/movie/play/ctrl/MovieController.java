@@ -33,13 +33,13 @@ public class MovieController {
 
     @RequestMapping(value = "/getMovieByName")
     @ApiOperation(value = "按名称获取电影")
-    public MovieEntity getMovieByName(String name) {
+    public MovieEntity getMovieByName(@ApiParam(value = "电影名称",required = true) @RequestParam String name) {
         return movieService.findByMovieName(name);
     }
 
     @RequestMapping(value = "/getMovieByUserIds")
     @ApiOperation(value = "按用户IDs获取电影")
-    public List<MovieEntity> getMovieByUserIds(String userIds) {
+    public List<MovieEntity> getMovieByUserIds(@ApiParam(value = "用户IDs",required = true) @RequestParam String userIds) {
         String[] split = userIds.split(",");
         List<String> list = Arrays.asList(split);
         List<Integer> integerList = list.stream().map(s -> Integer.valueOf(s)).collect(Collectors.toList());

@@ -29,10 +29,12 @@ import java.util.Date;
 public class AuthenticationFilter extends BasicAuthenticationFilter {
 
     private AuthService authService;
+    private AccessMatch accessMatch;
 
     public AuthenticationFilter(AuthenticationManager authenticationManager) {
         super(authenticationManager);
         authService = SpringUtil.getBean(AuthService.class);
+        accessMatch = SpringUtil.getBean(AccessMatch.class);
     }
 
     /**
@@ -46,6 +48,11 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
      */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+        //URI:统一资源标识符。用来唯一标识资源，是一种语义上的抽象概念。 URL:统一资源定位符。用来定位唯一的资源， 必须提供足够的定位信息。
+        if (accessMatch.isAccessUri(request)){
+            chain.doFilter(request, response);
+            return;
+        }
         if (!authorize(request, response)) {
             return;
         }
@@ -68,7 +75,6 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
     public boolean authorize(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
             String token = TokenUtil.getToken(request);
-            Date authDate = JwtUtil.parseToken(token).getExpiration();
             if (null == token) {
                 response.setStatus(400);
                 CommonResponse result = new CommonResponse(CommonResponse.FAILURE_CODE, "token非法或不存在");
@@ -81,6 +87,7 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
                 ResponseUtil.writeData(response,result);
                 return false;
             }
+            Date authDate = JwtUtil.parseToken(token).getExpiration();
             if (authDate.before(new Date(System.currentTimeMillis()))){
                 response.setStatus(400);
                 CommonResponse result = new CommonResponse(CommonResponse.FAILURE_CODE, "token已过期");

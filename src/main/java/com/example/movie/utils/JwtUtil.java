@@ -25,8 +25,7 @@ public class JwtUtil {
                 //主体
                 .setSubject(username)
                 //过期时间
-//                .setExpiration(new Date(System.currentTimeMillis() + SecurityConstant.TOKEN_EXPIRATION_TIME))
-                .setExpiration(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + SecurityConstant.TOKEN_EXPIRATION_TIME))
                 //签名算法及密匙
                 .signWith(SignatureAlgorithm.HS512, SecurityConstant.SIGNING_KEY)
                 .compact();

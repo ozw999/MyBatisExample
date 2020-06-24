@@ -17,16 +17,16 @@ import javax.validation.constraints.Size;
 @ApiModel(description = "电影更新入参")
 public class UpdateMovieInput {
     @NotNull
-    @ApiModelProperty(value = "电影ID")
+    @ApiModelProperty(value = "电影ID",required = true)
     private Integer movieId;
 
-    @ApiModelProperty(value = "用户ID")
+    @ApiModelProperty(value = "用户ID",required = true)
     private Integer userId;
 
     @Size(max = 50 , message = "电影名称不能大于{max}")
-    @ApiModelProperty(value = "电影名称")
+    @ApiModelProperty(value = "电影名称",required = true)
     private String movieName;
 
-    @ApiModelProperty(value = "电影链接")
+    @ApiModelProperty(value = "电影链接",required = true)
     private String url;
 }

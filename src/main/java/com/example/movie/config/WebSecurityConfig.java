@@ -86,7 +86,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 //Security通过csrftoken进行防御
                 .cors().and().csrf().disable()  //关闭csrf防御    // 允许跨域访问
                 .authorizeRequests()    //开启URL权限配置
-//                .antMatchers("/**").permitAll()
+                //定义了过滤器后,需要同步在过滤器中处理
                 // 开放swagger start
                 .antMatchers("/swagger-ui.html",
                         "/swagger-resources/**",
@@ -105,10 +105,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .usernameParameter("username")  //用户名参数名称
                 .passwordParameter("password")  //密码参数名称
                 .successHandler(new CustomAuthSuccessHandler())     //登录成功处理器
-                .failureHandler(((httpServletRequest, httpServletResponse, exception) -> {
-                    CommonResponse result = new CommonResponse(CommonResponse.FAILURE_CODE, LoginFailureEnum.getValue(exception.getMessage()));
-                    ResponseUtil.writeData(httpServletResponse, result);
+                .failureHandler(((request, response, authException) -> {
+                    CommonResponse result = new CommonResponse(CommonResponse.FAILURE_CODE, LoginFailureEnum.getValue(authException.getMessage()));
+                    ResponseUtil.writeData(response, result);
                 }))     //登录失败处理器
+                .and().exceptionHandling()
                 .and().addFilter(new AuthenticationFilter(authenticationManager()))     //认证过滤器
         ;
     }
