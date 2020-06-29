@@ -54,6 +54,13 @@
             </exclusions>
         </dependency>
 
+        <!-- 使用@ConfigurationProperties 需导入此依赖      -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
