@@ -24,5 +24,14 @@ swagger:
         name: authorization
         description: 认证
 
+#自定义过滤路径
+auth:
+  basic-filter:
+    accessUriList:
+      - /auth/findAuthById
+      - /login/webLogin
+    accessPattenUriList:
+      - /images/
+
 
 

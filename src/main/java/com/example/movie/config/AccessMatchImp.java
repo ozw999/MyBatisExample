@@ -11,7 +11,6 @@ import java.util.List;
  * @Author: Ou
  * @Date: 2020/6/24
  */
-@Component
 public class AccessMatchImp implements AccessMatch{
 
     private static final String ROOT_URI = "/";
